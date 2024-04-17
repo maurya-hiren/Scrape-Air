@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Data Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Including Chart.js -->
+</head>
+<body>
+    <canvas id="priceChart"></canvas> <!-- Canvas where the chart will be drawn -->
+    <script>
+        // Example JavaScript to load and parse the JSON data
+        fetch('../Json/flight_data_1_id_3510.json')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(flight => flight['Flight Unique Number']);
+                const prices = data.map(flight => parseFloat(flight.Price.replace(',', '')));
+
+                const ctx = document.getElementById('priceChart').getContext('2d');
+                const priceChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Flight Price',
+                            data: prices,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+    </script>
+</body>
+</html>

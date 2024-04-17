@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "pdf2json": "^3.0.5"
+  },
+  "name": "pdftohtml",
+  "version": "1.0.0",
+  "main": "extractPdfText.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

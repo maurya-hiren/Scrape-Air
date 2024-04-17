@@ -1,0 +1,8 @@
+Flight Project
+
+from to (Location)
+flight type (Air india)
+flight no (Unique Number of flights)
+Date of scrape (Scraping Date)
+Price (Fare of the Flight)
+increased price (increased rate compare to previous)

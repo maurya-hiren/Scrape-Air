@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Data Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+
+/* CSS */
+body{
+    background-color: #000000;
+}
+.button-67 {
+  align-items: center;
+  background: #f5f5fa;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: -10px -10px 30px 0 #fff,10px 10px 30px 0 #1d0dca17;
+  box-sizing: border-box;
+  color: #2a1f62;
+  cursor: pointer;
+  display: flex;
+  font-family: "Cascadia Code",Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;
+  font-size: 1rem;
+  justify-content: center;
+  line-height: 1.5rem;
+  padding: 15px;
+  position: relative;
+  text-align: left;
+  transition: .2s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: pre;
+  width: max-content;
+  word-break: normal;
+  word-spacing: normal;
+}
+
+.button-67:hover {
+  background: #f8f8ff;
+  box-shadow: -15px -15px 30px 0 #fff, 15px 15px 30px 0 #1d0dca17;
+}
+
+@media (min-width: 768px) {
+  .button-67 {
+    padding: 24px;
+  }
+}
+        
+
+/* Parent background */
+    </style>
+</head>
+<body>
+    <center>
+
+        <input class="button-67" type="file" id="jsonFileInput" accept=".json">
+    </center>
+    <div>
+        <canvas id="flightDistributionChart"></canvas>
+    </div>
+    <div>
+        <canvas id="averageDurationChart"></canvas>
+    </div>
+    <div>
+        <canvas id="priceDistributionChart"></canvas>
+    </div>
+
+    <script>
+        document.getElementById('jsonFileInput').addEventListener('change', function() {
+            const fileReader = new FileReader();
+            fileReader.readAsText(this.files[0]);
+            fileReader.onload = function() {
+                const data = JSON.parse(fileReader.result);
+                processAndDisplayData(data);
+            };
+        });
+
+        function processAndDisplayData(data) {
+            // Initialize containers for processed data
+            const flightDistribution = {};
+            const averageDuration = {};
+            let priceDistribution = [];
+
+            data.forEach(flight => {
+                const airline = flight["Type of Flight"];
+                const durationStr = flight["Total timing (Duration)"];
+                const price = parseInt(flight["Price"].replace(",", ""));
+
+                // Process flight distribution
+                if (!flightDistribution[airline]) {
+                    flightDistribution[airline] = 0;
+                }
+                flightDistribution[airline] += 1;
+
+                // Process average duration
+                const [hours, minutes] = durationStr.split('h').join('').split('m').map(Number);
+                const durationMinutes = hours * 60 + minutes;
+                if (!averageDuration[airline]) {
+                    averageDuration[airline] = [];
+                }
+                averageDuration[airline].push(durationMinutes);
+
+                // Process price distribution
+                priceDistribution.push(price);
+            });
+
+            // Calculate average duration per airline
+            Object.keys(averageDuration).forEach(airline => {
+                const total = averageDuration[airline].reduce((acc, val) => acc + val, 0);
+                const avg = total / averageDuration[airline].length;
+                averageDuration[airline] = avg;
+            });
+
+            // Assuming a simple histogram for prices (this part could be expanded for actual distribution analysis)
+            // This is just a placeholder for how you might set up such a chart.
+            priceDistribution = priceDistribution.sort((a, b) => a - b);
+
+            // Create charts
+            createChart('flightDistributionChart', 'pie', 'Flight Distribution by Airline', Object.keys(flightDistribution), Object.values(flightDistribution));
+            createChart('averageDurationChart', 'bar', 'Average Flight Duration (minutes)', Object.keys(averageDuration), Object.values(averageDuration));
+            createChart('priceDistributionChart', 'line', 'Flight Prices', priceDistribution.map((_, i) => `Flight ${i+1}`), priceDistribution);
+        }
+
+        function createChart(elementId, type, label, labels, data) {
+            new Chart(document.getElementById(elementId), {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                        fill: type !== 'line' // Fill chart area for types other than line
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {beginAtZero: true}
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

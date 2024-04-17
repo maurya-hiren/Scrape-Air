@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Price Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="comparisonChart"></canvas>
+    <script>
+        // Function to fetch JSON data
+        async function fetchData(url) {
+            const response = await fetch(url);
+            return response.json();
+        }
+
+        // Load your JSON data
+        async function loadDataAndGenerateChart() {
+            const data1 = await fetchData('../Json/flight_data_1_id_3510.json');
+            const data2 = await fetchData('../Json2/output_file.json');
+            const data3 = await fetchData('../Json/flight_data_1_id_4727.json');
+            const data4 = await fetchData('../Json2/output_file12.json');
+
+            // Assuming all datasets have the same flights in the same order,
+            // otherwise, you'd need to sort or match them.
+            const labels = data1.map(flight => flight['Flight Unique Number']);
+            const prices1 = data1.map(flight => parseInt(flight.Price));
+            const prices2 = data2.map(flight => parseInt(flight.Price));
+            const prices3 = data3.map(flight => parseInt(flight.Price));
+            const prices4 = data4.map(flight => parseInt(flight.Price));
+
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            const comparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Dataset 1 Prices',
+                        data: prices1,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Dataset 2 Prices',
+                        data: prices2,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Dataset 3 Prices',
+                        data: prices3,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Dataset 4 Prices',
+                        data: prices4,
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        loadDataAndGenerateChart();
+    </script>
+</body>
+</html>
